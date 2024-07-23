@@ -2,7 +2,7 @@
 
 ---
 
-# Commercency
+# Hot Ruls - Commercency
 Ecommerce, simple.
 
 ## Como la uso?
