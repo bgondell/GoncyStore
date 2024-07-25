@@ -3,7 +3,7 @@
 ---
 
 # Hot Ruls - Commercency
-Ecommerce, simple. For Ruls.
+Ecommerce, simple. For Ruls. Hecho por @goncy
 
 ## Como la uso?
 1. Crea una copia de [esta planilla de calculo](https://docs.google.com/spreadsheets/d/1Q_mDN1w88zE1vDasru-f3D6kxZAynUC1s253yLmjE7M/edit?usp=sharing).
