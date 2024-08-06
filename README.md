@@ -19,3 +19,4 @@ Ecommerce, simple. For Ruls. Hecho por @goncy
 * Datos de tienda vía hoja de sheet
 * Búsqueda
 * Secciones por categoría
+
