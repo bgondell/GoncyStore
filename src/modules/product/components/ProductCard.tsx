@@ -9,10 +9,14 @@ import {ImageOff} from "lucide-react";
 
 import CartItemDrawer from "~/cart/components/CartItemDrawer";
 import {parseCurrency} from "~/currency/utils";
+import ImageCarousel from "./ImageCarousel"; // Add Animation between product images
 
 function ProductCard({product, onAdd}: {product: Product; onAdd: (product: Product) => void}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const cartItem = useMemo<CartItem>(() => ({...product, quantity: 1}), [product]);
+
+  // Split the image string into an array of image paths
+  const imagePaths = product.image ? product.image.split(",").map(path => path.trim()) : [];
 
   return (
     <>
@@ -36,18 +40,7 @@ function ProductCard({product, onAdd}: {product: Product; onAdd: (product: Produ
               <p className="text-sm font-medium text-incentive">{parseCurrency(product.price)}</p>
             </div>
           </div>
-          {product.image ? (
-            <img
-              alt={product.title}
-              className="aspect-square h-24 w-24 min-w-24 rounded-md bg-muted/50 object-cover sm:h-36 sm:w-36 sm:min-w-36"
-              loading="lazy"
-              src={product.image}
-            />
-          ) : (
-            <div className="flex aspect-square h-24 w-24 min-w-24 items-center justify-center rounded-md bg-muted/50 object-cover sm:h-36 sm:w-36 sm:min-w-36">
-              <ImageOff className="m-auto h-12 w-12 opacity-10 sm:h-16 sm:w-16" />
-            </div>
-          )}
+          <ImageCarousel images={imagePaths} title={product.title} />
         </div>
       </div>
       {isModalOpen ? (

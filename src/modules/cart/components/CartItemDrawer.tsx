@@ -24,6 +24,8 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 import {getCartItemPrice} from "../utils";
 
+import ImageCarousel from "./ImageCarousel";
+
 function CartItemDrawer({
   item,
   onClose,
@@ -43,6 +45,9 @@ function CartItemDrawer({
         : [],
     [item],
   );
+
+  // Split the image string into an array of image paths
+  const imagePaths = item.image ? item.image.split(",").map(path => path.trim()) : [];
 
   function handleSelectOption(option: Option) {
     setFormData((_formData) => ({
@@ -66,12 +71,8 @@ function CartItemDrawer({
         >
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-2">
-              {Boolean(item.image) && (
-                <img
-                  alt={item.title}
-                  className="h-[240px] w-full bg-secondary object-contain sm:h-[320px]"
-                  src={item.image}
-                />
+              {imagePaths.length > 0 && (
+                <ImageCarousel images={imagePaths} title={item.title} />
               )}
               <SheetTitle className="text-2xl font-medium">{item.title}</SheetTitle>
               <SheetDescription className="text-md whitespace-pre-wrap text-muted-foreground sm:text-lg">
