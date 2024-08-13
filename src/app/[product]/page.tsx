@@ -23,7 +23,7 @@ export async function generateMetadata({
   };
 }
 
-function ProductPage({ params: { product } }: { params: { product: string } }) {
+const ProductPage = async ({params: {product}}: {params: {product: string}}) => {
   const data = await api.fetch(product);
 
   return <ProductPageClient product={data} />;
