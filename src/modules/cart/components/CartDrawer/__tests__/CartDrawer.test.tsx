@@ -1,7 +1,7 @@
-import type {CartItem} from "../../../types";
+import type { CartItem } from "../../../types";
 
 import * as React from "react";
-import {render, screen, within} from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 import CartDrawer from "../CartDrawer";
 import * as cartContext from "../../../context/client";
@@ -21,17 +21,19 @@ const cartItem: CartItem = {
 test("deberia mostrar la cantidad de productos en un item en el detalle", () => {
   const cart = new Map<CartItem["id"], CartItem>([[cartItem.id, cartItem]]);
 
-  jest.spyOn<any, any>(cartContext, "useCart").mockReturnValue([{cart}, {}]);
+  jest.spyOn<any, any>(cartContext, "useCart").mockReturnValue([{ cart }, {}]);
 
   render(<CartDrawer isOpen fields={[]} onClose={jest.fn()} />);
 
-  expect(screen.getByTestId("quantity")).toHaveTextContent(String(cartItem.quantity));
+  expect(screen.getByTestId("quantity")).toHaveTextContent(
+    String(cartItem.quantity),
+  );
 });
 
 test("deberia mostrar la cantidad de productos en el detalle", () => {
   const cart = new Map<CartItem["id"], CartItem>([[cartItem.id, cartItem]]);
 
-  jest.spyOn<any, any>(cartContext, "useCart").mockReturnValue([{cart}, {}]);
+  jest.spyOn<any, any>(cartContext, "useCart").mockReturnValue([{ cart }, {}]);
 
   render(<CartDrawer isOpen fields={[]} onClose={jest.fn()} />);
 

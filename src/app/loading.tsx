@@ -1,4 +1,4 @@
-import {Skeleton} from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function LoadingPage() {
   return (
@@ -11,7 +11,7 @@ export default function LoadingPage() {
         </div>
       </div>
       <div className="mt-4 flex flex-col gap-4">
-        {Array.from({length: 3}).map((_, index) => (
+        {Array.from({ length: 3 }).map((_, index) => (
           <Skeleton key={index} className="h-24 w-full rounded-md" />
         ))}
       </div>

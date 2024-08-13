@@ -1,6 +1,11 @@
-import type {CartItem} from "../types";
+import type { CartItem } from "../types";
 
-import {getCartItemOptionsSummary, getCartItemPrice, getCartMessage, getCartTotal} from "../utils";
+import {
+  getCartItemOptionsSummary,
+  getCartItemPrice,
+  getCartMessage,
+  getCartTotal,
+} from "../utils";
 
 const item: CartItem = {
   id: "id",
@@ -22,7 +27,7 @@ describe("getCartItemPrice", () => {
     });
 
     it("debería devolver el precio correcto cuando hay más de una unidad", () => {
-      const actual: number = getCartItemPrice({...item, quantity: 2});
+      const actual: number = getCartItemPrice({ ...item, quantity: 2 });
       const expected = 200;
 
       expect(actual).toEqual(expected);

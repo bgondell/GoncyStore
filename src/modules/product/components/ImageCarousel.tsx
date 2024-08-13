@@ -10,29 +10,35 @@ function ImageCarousel({ images, title }: { images: string[]; title: string }) {
   }, [images.length]);
 
   const prevImage = useCallback(() => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + images.length) % images.length,
+    );
   }, [images.length]);
 
   useEffect(() => {
     if (!isPaused && images.length > 1) {
       const interval = setInterval(nextImage, 1000);
+
       return () => clearInterval(interval);
     }
   }, [isPaused, nextImage, images.length]);
 
-  const handleManualNavigation = useCallback((direction: 'prev' | 'next') => {
-    setIsPaused(true);
-    if (direction === 'prev') {
-      prevImage();
-    } else {
-      nextImage();
-    }
+  const handleManualNavigation = useCallback(
+    (direction: "prev" | "next") => {
+      setIsPaused(true);
+      if (direction === "prev") {
+        prevImage();
+      } else {
+        nextImage();
+      }
 
-    // Resume automatic rotation after 5 seconds of inactivity
-    setTimeout(() => {
-      setIsPaused(false);
-    }, 10000);
-  }, [prevImage, nextImage]);
+      // Resume automatic rotation after 5 seconds of inactivity
+      setTimeout(() => {
+        setIsPaused(false);
+      }, 10000);
+    },
+    [prevImage, nextImage],
+  );
 
   if (images.length === 0) {
     return (
@@ -53,22 +59,22 @@ function ImageCarousel({ images, title }: { images: string[]; title: string }) {
       {images.length > 1 && (
         <>
           <button
+            aria-label="Previous image"
+            className="absolute left-0 top-1/2 -translate-y-1/2 rounded-r-md bg-black/50 p-1 text-white"
             onClick={(e) => {
               e.stopPropagation();
-              handleManualNavigation('prev');
+              handleManualNavigation("prev");
             }}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/50 p-1 text-white rounded-r-md"
-            aria-label="Previous image"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
+            aria-label="Next image"
+            className="absolute right-0 top-1/2 -translate-y-1/2 rounded-l-md bg-black/50 p-1 text-white"
             onClick={(e) => {
               e.stopPropagation();
-              handleManualNavigation('next');
+              handleManualNavigation("next");
             }}
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/50 p-1 text-white rounded-l-md"
-            aria-label="Next image"
           >
             <ChevronRight className="h-4 w-4" />
           </button>

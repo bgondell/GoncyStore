@@ -1,7 +1,7 @@
-import type {Option as IOption, Product as IProduct} from "./types";
+import type { Option as IOption, Product as IProduct } from "./types";
 
 import Papa from "papaparse";
-import {notFound} from "next/navigation";
+import { notFound } from "next/navigation";
 
 interface RawOption extends IOption {
   type: "option";
@@ -97,30 +97,34 @@ function normalize(data: (RawProduct | RawOption | RawUnknown)[]) {
     }
   }
 
-  const normalized: IProduct[] = Object.values(Object.fromEntries(products)).map((product) =>
-    product.toJSON(),
-  );
+  const normalized: IProduct[] = Object.values(
+    Object.fromEntries(products),
+  ).map((product) => product.toJSON());
 
   return normalized;
 }
 
 const api = {
   list: async (): Promise<IProduct[]> => {
-    return fetch(process.env.PRODUCTS!, {next: {tags: ["products"]}}).then(async (response) => {
-      const csv = await response.text();
+    return fetch(process.env.PRODUCTS!, { next: { tags: ["products"] } }).then(
+      async (response) => {
+        const csv = await response.text();
 
-      return new Promise<IProduct[]>((resolve, reject) => {
-        Papa.parse(csv, {
-          header: true,
-          complete: (results) => {
-            const data = normalize(results.data as (RawProduct | RawOption | RawUnknown)[]);
+        return new Promise<IProduct[]>((resolve, reject) => {
+          Papa.parse(csv, {
+            header: true,
+            complete: (results) => {
+              const data = normalize(
+                results.data as (RawProduct | RawOption | RawUnknown)[],
+              );
 
-            return resolve(data);
-          },
-          error: (error: Error) => reject(error.message),
+              return resolve(data);
+            },
+            error: (error: Error) => reject(error.message),
+          });
         });
-      });
-    });
+      },
+    );
   },
   fetch: async (id: IProduct["id"]): Promise<IProduct> => {
     const products = await api.list();
@@ -132,8 +136,9 @@ const api = {
   },
   mock: {
     list: (mock: string): Promise<IProduct[]> =>
-      import(`./mocks/${mock}.json`).then((result: {default: (RawProduct | RawOption)[]}) =>
-        normalize(result.default),
+      import(`./mocks/${mock}.json`).then(
+        (result: { default: (RawProduct | RawOption)[] }) =>
+          normalize(result.default),
       ),
   },
 };

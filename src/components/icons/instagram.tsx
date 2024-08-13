@@ -1,4 +1,4 @@
-export default function InstagramIcon({size = 26}: {size?: number}) {
+export default function InstagramIcon({ size = 26 }: { size?: number }) {
   return (
     <svg
       fill="currentColor"

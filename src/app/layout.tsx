@@ -1,4 +1,4 @@
-import type {Metadata} from "next";
+import type { Metadata } from "next";
 
 import api from "~/store/api";
 import CartProvider from "~/cart/context";
@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const RootLayout = async ({children}: {children: React.ReactNode}) => {
+function RootLayout({ children }: { children: React.ReactNode }) {
   const store = await api.fetch();
 
   return (
@@ -44,8 +44,12 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
                 </div>
                 <div className="flex flex-col items-center gap-4 text-center sm:items-start sm:gap-2 sm:text-left">
                   <div className="flex flex-col gap-1">
-                    <p className="text-3xl font-bold sm:text-4xl">{store.title}</p>
-                    <p className="font-medium text-muted-foreground">{store.subtitle}</p>
+                    <p className="text-3xl font-bold sm:text-4xl">
+                      {store.title}
+                    </p>
+                    <p className="font-medium text-muted-foreground">
+                      {store.subtitle}
+                    </p>
                   </div>
                   <div className="flex gap-2">
                     {store.instagram ? (
@@ -82,7 +86,8 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
             <footer className="px-4">
               {/* Inicio de copyright - Cambiar el contenido de los mismos viola el contenido de los terminos de licencia */}
               <p className="sm:text-md border-t py-4 text-center text-sm text-muted-foreground">
-                © Copyright {new Date().getFullYear()}. Adaptado con <ThemeToggle /> para Ruls, hecho por {" "}
+                © Copyright {new Date().getFullYear()}. Adaptado con{" "}
+                <ThemeToggle /> para Ruls, hecho por{" "}
                 <a
                   className="underline"
                   href="https://twitter.com/goncy"
@@ -100,6 +105,6 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
       </body>
     </html>
   );
-};
+}
 
 export default RootLayout;

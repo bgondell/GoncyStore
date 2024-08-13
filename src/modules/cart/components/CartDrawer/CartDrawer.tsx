@@ -1,9 +1,9 @@
-import type {Store} from "~/store/types";
+import type { Store } from "~/store/types";
 
-import type {CartItem, Field} from "../../types";
+import type { CartItem, Field } from "../../types";
 
-import {useEffect, useState} from "react";
-import {X} from "lucide-react";
+import { useEffect, useState } from "react";
+import { X } from "lucide-react";
 
 import {
   Sheet,
@@ -13,10 +13,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import WhatsappIcon from "@/components/icons/whatsapp";
 
-import {useCart} from "../../context/client";
+import { useCart } from "../../context/client";
 
 import Details from "./Details";
 import Fields from "./Fields";
@@ -31,8 +31,13 @@ function CartDrawer({
   store: Store;
   onClose: VoidFunction;
 }) {
-  const [{total, message, cart, checkout}, {removeItem, updateItem, updateField}] = useCart();
-  const [currentStep, setCurrentStep] = useState<"details" | "fields">("details");
+  const [
+    { total, message, cart, checkout },
+    { removeItem, updateItem, updateField },
+  ] = useCart();
+  const [currentStep, setCurrentStep] = useState<"details" | "fields">(
+    "details",
+  );
 
   function handleUpdateCart(id: number, item: CartItem) {
     if (!item.quantity) {
@@ -61,13 +66,21 @@ function CartDrawer({
           <SheetClose className="-mx-6 ml-auto h-12 w-14 rounded-l-lg border border-border bg-background py-2 pl-2 pr-4 shadow-lg">
             <X className="h-8 w-8" />
           </SheetClose>
-          <SheetTitle className="text-left text-2xl font-medium">Tu pedido</SheetTitle>
+          <SheetTitle className="text-left text-2xl font-medium">
+            Tu pedido
+          </SheetTitle>
         </SheetHeader>
 
         <div className="overflow-y-auto" data-testid="cart">
-          {currentStep === "details" && <Details cart={cart} onChange={handleUpdateCart} />}
+          {currentStep === "details" && (
+            <Details cart={cart} onChange={handleUpdateCart} />
+          )}
           {fields && currentStep === "fields" ? (
-            <Fields checkout={checkout} fields={fields} onChange={handleUpdateField} />
+            <Fields
+              checkout={checkout}
+              fields={fields}
+              onChange={handleUpdateField}
+            />
           ) : null}
         </div>
 
@@ -111,7 +124,12 @@ function CartDrawer({
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <Button className="w-full" data-testid="complete-order" size="lg" variant="brand">
+                <Button
+                  className="w-full"
+                  data-testid="complete-order"
+                  size="lg"
+                  variant="brand"
+                >
                   <div className="inline-flex items-center gap-2">
                     <WhatsappIcon />
                     <span>Completar pedido</span>

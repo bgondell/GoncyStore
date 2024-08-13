@@ -1,44 +1,57 @@
 "use client";
 
-import type {Product} from "~/product/types";
+import type { Product } from "~/product/types";
 
-import {useMemo, useState} from "react";
-import {SearchIcon, X, Table, StretchHorizontal, ChevronDown} from "lucide-react";
+import { useMemo, useState } from "react";
+import {
+  SearchIcon,
+  X,
+  Table,
+  StretchHorizontal,
+  ChevronDown,
+} from "lucide-react";
 
-import {useCart} from "~/cart/context/client";
+import { useCart } from "~/cart/context/client";
 import ProductCard from "~/product/components/ProductCard";
 
-import {cn} from "@/lib/utils";
-import {Input} from "@/components/ui/input";
-import {Toggle} from "@/components/ui/toggle";
+import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Toggle } from "@/components/ui/toggle";
 
-function StoreScreen({products}: {products: Product[]}) {
-  const [, {addItem}] = useCart();
+function StoreScreen({ products }: { products: Product[] }) {
+  const [, { addItem }] = useCart();
   const [query, setQuery] = useState<string>("");
   const [layout, setLayout] = useState<"list" | "grid">(() =>
     products.length > 30 ? "list" : "grid",
   );
-  const [selectedCategory, setSelectedCategory] = useState<Product["category"] | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<
+    Product["category"] | null
+  >(null);
   const categories = useMemo<[Product["category"], Product[]][]>(() => {
     let draft = products;
 
     // Filter products by search query
     if (query) {
-      draft = draft.filter(({title, description}) =>
-        (title.toLowerCase() + description.toLowerCase()).includes(query.toLowerCase()),
+      draft = draft.filter(({ title, description }) =>
+        (title.toLowerCase() + description.toLowerCase()).includes(
+          query.toLowerCase(),
+        ),
       );
     }
 
     // Group products by category
-    const groups = draft.reduce<Map<Product["category"], Product[]>>((map, product) => {
-      if (!map.has(product.category)) {
-        map.set(product.category, []);
-      }
+    const groups = draft.reduce<Map<Product["category"], Product[]>>(
+      (map, product) => {
+        if (!map.has(product.category)) {
+          map.set(product.category, []);
+        }
 
-      map.set(product.category, map.get(product.category)!.concat(product));
+        map.set(product.category, map.get(product.category)!.concat(product));
 
-      return map;
-    }, new Map());
+        return map;
+      },
+      new Map(),
+    );
 
     // Return them in a tuple of [category, products]
     return Array.from(groups.entries());
@@ -120,7 +133,11 @@ function StoreScreen({products}: {products: Product[]}) {
       <div className="flex flex-col">
         {categories.length ? (
           categories.map(([category, categoryProducts]) => (
-            <div key={category} className="flex flex-col gap-4 border-t py-4" id={category}>
+            <div
+              key={category}
+              className="flex flex-col gap-4 border-t py-4"
+              id={category}
+            >
               <div
                 className={cn("flex items-center justify-between gap-4", {
                   "cursor-pointer": layout === "list",
@@ -130,11 +147,17 @@ function StoreScreen({products}: {products: Product[]}) {
                 }}
               >
                 <h2 className="text-xl font-medium sm:text-2xl">
-                  {category} <span className="opacity-70">({categoryProducts.length})</span>
+                  {category}{" "}
+                  <span className="opacity-70">
+                    ({categoryProducts.length})
+                  </span>
                 </h2>
-                {layout === "list" && <ChevronDown className="h-6 w-6 opacity-40" />}
+                {layout === "list" && (
+                  <ChevronDown className="h-6 w-6 opacity-40" />
+                )}
               </div>
-              {((layout === "list" && selectedCategory === category) || layout === "grid") && (
+              {((layout === "list" && selectedCategory === category) ||
+                layout === "grid") && (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {categoryProducts.length ? (
                     categoryProducts.map((product) => (
@@ -142,7 +165,7 @@ function StoreScreen({products}: {products: Product[]}) {
                         key={product.id}
                         product={product}
                         onAdd={(item: Product) => {
-                          addItem(Date.now(), {...item, quantity: 1});
+                          addItem(Date.now(), { ...item, quantity: 1 });
                         }}
                       />
                     ))
@@ -159,7 +182,9 @@ function StoreScreen({products}: {products: Product[]}) {
           ))
         ) : (
           <div className="my-12 flex flex-col gap-4">
-            <h2 className="text-center text-xl text-muted-foreground">No hay productos</h2>
+            <h2 className="text-center text-xl text-muted-foreground">
+              No hay productos
+            </h2>
           </div>
         )}
       </div>

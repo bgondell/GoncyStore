@@ -1,4 +1,4 @@
-export default function WhatsappIcon({size = 20}: {size?: number}) {
+export default function WhatsappIcon({ size = 20 }: { size?: number }) {
   return (
     <svg
       fill="currentColor"

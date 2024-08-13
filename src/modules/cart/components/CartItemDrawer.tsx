@@ -1,14 +1,15 @@
-import type {Option} from "~/product/types";
-import type {CartItem} from "../types";
-import type {ComponentProps} from "react";
+import type { Option } from "~/product/types";
 
-import {useState, useMemo, useEffect} from "react";
-import {X, AlertCircle} from "lucide-react";
+import type { CartItem } from "../types";
+import type { ComponentProps } from "react";
 
-import {parseCurrency} from "~/currency/utils";
+import { useState, useMemo, useEffect } from "react";
+import { X, AlertCircle } from "lucide-react";
 
-import {cn} from "@/lib/utils";
-import {Button} from "@/components/ui/button";
+import { parseCurrency } from "~/currency/utils";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -18,10 +19,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {Label} from "@/components/ui/label";
-import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-import {getCartItemPrice} from "../utils";
+import { getCartItemPrice } from "../utils";
 
 import ImageCarousel from "./ImageCarousel";
 
@@ -35,25 +36,36 @@ function CartItemDrawer({
   onClose: VoidFunction;
   onSubmit: (item: CartItem) => void;
 }) {
-  const [formData, setFormData] = useState<CartItem>(() => ({...item, options: {}}));
+  const [formData, setFormData] = useState<CartItem>(() => ({
+    ...item,
+    options: {},
+  }));
   const [missingOptions, setMissingOptions] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  const total = useMemo(() => parseCurrency(getCartItemPrice(formData)), [formData]);
+  const total = useMemo(
+    () => parseCurrency(getCartItemPrice(formData)),
+    [formData],
+  );
   const options = useMemo(
     () =>
       item.options
-        ? Object.entries(item.options).map(([title, _options]) => ({title, options: _options}))
+        ? Object.entries(item.options).map(([title, _options]) => ({
+            title,
+            options: _options,
+          }))
         : [],
     [item],
   );
 
-  const imagePaths = item.image ? item.image.split(",").map(path => path.trim()) : [];
+  const imagePaths = item.image
+    ? item.image.split(",").map((path) => path.trim())
+    : [];
 
   // Reset formData and missingOptions when the drawer is opened
   useEffect(() => {
     if (isOpen) {
-      setFormData({...item, options: {}});
+      setFormData({ ...item, options: {} });
       setMissingOptions([]);
     }
   }, [isOpen, item]);
@@ -61,15 +73,17 @@ function CartItemDrawer({
   function handleSelectOption(option: Option) {
     setFormData((_formData) => ({
       ..._formData,
-      options: {...(_formData.options || {}), [option.category]: [option]},
+      options: { ...(_formData.options || {}), [option.category]: [option] },
     }));
-    setMissingOptions((prevMissing) => prevMissing.filter((title) => title !== option.category));
+    setMissingOptions((prevMissing) =>
+      prevMissing.filter((title) => title !== option.category),
+    );
   }
 
   function handleSubmit() {
     const missing = options
-      .map(category => category.title)
-      .filter(title => !formData.options?.[title]);
+      .map((category) => category.title)
+      .filter((title) => !formData.options?.[title]);
 
     if (missing.length > 0) {
       setMissingOptions(missing);
@@ -79,11 +93,11 @@ function CartItemDrawer({
   }
 
   return (
-    <Sheet 
+    <Sheet
       onOpenChange={(open) => {
         setIsOpen(open);
         if (!open) onClose();
-      }} 
+      }}
       {...props}
     >
       <SheetContent className="grid grid-rows-[auto_1fr_auto]">
@@ -94,7 +108,7 @@ function CartItemDrawer({
         </SheetHeader>
 
         <div
-          className={cn("overflow-y-auto", {"-mt-16": item.image})}
+          className={cn("overflow-y-auto", { "-mt-16": item.image })}
           data-testid="cart-item-drawer"
         >
           <div className="flex flex-col gap-8">
@@ -102,7 +116,9 @@ function CartItemDrawer({
               {imagePaths.length > 0 && (
                 <ImageCarousel images={imagePaths} title={item.title} />
               )}
-              <SheetTitle className="text-2xl font-medium">{item.title}</SheetTitle>
+              <SheetTitle className="text-2xl font-medium">
+                {item.title}
+              </SheetTitle>
               <SheetDescription className="text-md whitespace-pre-wrap text-muted-foreground sm:text-lg">
                 {item.description}
               </SheetDescription>
@@ -111,21 +127,32 @@ function CartItemDrawer({
               <div className="flex flex-col gap-8">
                 {options.map((category) => {
                   const isMissing = missingOptions.includes(category.title);
+
                   return (
-                    <div key={category.title} className="flex w-full flex-col gap-4">
+                    <div
+                      key={category.title}
+                      className="flex w-full flex-col gap-4"
+                    >
                       <div className="flex items-center justify-between">
                         <p className="text-lg font-medium">{category.title}</p>
-                        {isMissing && (
+                        {isMissing ? (
                           <div className="flex items-center gap-2 text-red-500">
                             <AlertCircle className="h-5 w-5" />
-                            <span className="text-sm">Selecciona una opción</span>
+                            <span className="text-sm">
+                              Selecciona una opción
+                            </span>
                           </div>
-                        )}
+                        ) : null}
                       </div>
-                      <RadioGroup value={formData.options?.[category.title]?.[0]?.title}>
+                      <RadioGroup
+                        value={formData.options?.[category.title]?.[0]?.title}
+                      >
                         <div className="flex flex-col gap-4">
                           {category.options.map((option) => (
-                            <div key={option.title} className="flex items-center gap-x-3">
+                            <div
+                              key={option.title}
+                              className="flex items-center gap-x-3"
+                            >
                               <RadioGroupItem
                                 id={option.title}
                                 value={option.title}
@@ -168,9 +195,9 @@ function CartItemDrawer({
               <p>{total}</p>
             </div>
             <Button
-              type="button"
               className="w-full"
               size="lg"
+              type="button"
               variant="brand"
               onClick={handleSubmit}
             >

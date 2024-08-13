@@ -1,7 +1,7 @@
-import type {Product} from "../../types";
+import type { Product } from "../../types";
 
 import * as React from "react";
-import {render, screen, fireEvent} from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 
 import ProductCard from "../ProductCard";
 

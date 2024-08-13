@@ -10,29 +10,35 @@ function ImageCarousel({ images, title }: { images: string[]; title: string }) {
   }, [images.length]);
 
   const prevImage = useCallback(() => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + images.length) % images.length,
+    );
   }, [images.length]);
 
   useEffect(() => {
     if (!isPaused) {
       const interval = setInterval(nextImage, 1000);
+
       return () => clearInterval(interval);
     }
   }, [isPaused, nextImage]);
 
-  const handleManualNavigation = useCallback((direction: 'prev' | 'next') => {
-    setIsPaused(true);
-    if (direction === 'prev') {
-      prevImage();
-    } else {
-      nextImage();
-    }
+  const handleManualNavigation = useCallback(
+    (direction: "prev" | "next") => {
+      setIsPaused(true);
+      if (direction === "prev") {
+        prevImage();
+      } else {
+        nextImage();
+      }
 
-    // Resume automatic rotation after 5 seconds of inactivity
-    setTimeout(() => {
-    setIsPaused(false);
-    }, 10000);
-  }, [prevImage, nextImage]);
+      // Resume automatic rotation after 5 seconds of inactivity
+      setTimeout(() => {
+        setIsPaused(false);
+      }, 10000);
+    },
+    [prevImage, nextImage],
+  );
 
   if (images.length === 0) {
     return null;
@@ -46,18 +52,18 @@ function ImageCarousel({ images, title }: { images: string[]; title: string }) {
         src={images[currentIndex]}
       />
       <button
+        aria-label="Previous image"
+        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
         type="button"
         onClick={() => handleManualNavigation("prev")}
-        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 text-white rounded-full"
-        aria-label="Previous image"
       >
         <ChevronLeft className="h-6 w-6" />
       </button>
       <button
+        aria-label="Next image"
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
         type="button"
         onClick={() => handleManualNavigation("next")}
-        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 text-white rounded-full"
-        aria-label="Next image"
       >
         <ChevronRight className="h-6 w-6" />
       </button>
