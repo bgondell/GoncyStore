@@ -46,14 +46,16 @@ function ImageCarousel({ images, title }: { images: string[]; title: string }) {
         src={images[currentIndex]}
       />
       <button
-        onClick={() => handleManualNavigation('prev')}
+        type="button"
+        onClick={() => handleManualNavigation("prev")}
         className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 text-white rounded-full"
         aria-label="Previous image"
       >
         <ChevronLeft className="h-6 w-6" />
       </button>
       <button
-        onClick={() => handleManualNavigation('next')}
+        type="button"
+        onClick={() => handleManualNavigation("next")}
         className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 text-white rounded-full"
         aria-label="Next image"
       >

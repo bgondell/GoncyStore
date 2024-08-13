@@ -5,7 +5,6 @@ import type {CartItem} from "~/cart/types";
 import type {Product} from "../types";
 
 import {useState, useMemo} from "react";
-import {ImageOff} from "lucide-react";
 
 import CartItemDrawer from "~/cart/components/CartItemDrawer";
 import {parseCurrency} from "~/currency/utils";
@@ -21,6 +20,8 @@ function ProductCard({product, onAdd}: {product: Product; onAdd: (product: Produ
   return (
     <>
       <div
+        role="button"
+        tabIndex={0}
         key={product.id}
         className="border-white/300 flex cursor-pointer items-center justify-between gap-3 rounded-md border"
         data-testid="product"

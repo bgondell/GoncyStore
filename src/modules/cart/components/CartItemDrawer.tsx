@@ -63,13 +63,13 @@ function CartItemDrawer({
       ..._formData,
       options: {...(_formData.options || {}), [option.category]: [option]},
     }));
-    setMissingOptions(prevMissing => prevMissing.filter(title => title !== option.category));
+    setMissingOptions((prevMissing) => prevMissing.filter((title) => title !== option.category));
   }
 
   function handleSubmit() {
     const missing = options
       .map(category => category.title)
-      .filter(title => !(formData.options && formData.options[title]));
+      .filter(title => !formData.options?.[title]);
 
     if (missing.length > 0) {
       setMissingOptions(missing);
@@ -168,6 +168,7 @@ function CartItemDrawer({
               <p>{total}</p>
             </div>
             <Button
+              type="button"
               className="w-full"
               size="lg"
               variant="brand"
