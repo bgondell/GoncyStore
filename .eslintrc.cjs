@@ -104,6 +104,7 @@ module.exports = {
     "@typescript-eslint/prefer-promise-reject-errors": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
