@@ -4,7 +4,7 @@ import cartApi from "../api";
 
 import CartProviderClient from "./client";
 
-function CartProvider({ children }: { children: React.ReactNode }) {
+const CartProvider = async ({children}: {children: React.ReactNode}) => {
   const fields = await cartApi.list();
   const store = await storeApi.fetch();
 

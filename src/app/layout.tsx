@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-function RootLayout({ children }: { children: React.ReactNode }) {
+const RootLayout = async ({children}: {children: React.ReactNode}) => {
   const store = await api.fetch();
 
   return (
