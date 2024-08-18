@@ -68,20 +68,25 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
     [prevItem, nextItem, isTransitioning],
   );
 
-  const toggleVideoPlayback = () => {
+  const toggleVideoPlayback = async () => {
     if (videoRef.current) {
       if (isVideoPlaying) {
         videoRef.current.pause();
       } else {
-        videoRef.current.play();
+        try {
+          await videoRef.current.play();
+        } catch (error: unknown) {
+          console.error("Error playing video:", error);
+        }
       }
       setIsVideoPlaying(!isVideoPlaying);
     }
   };
+  
 
   useEffect(() => {
     if (mediaItems[currentIndex].type === 'video' && videoRef.current) {
-      void videoRef.current.play()
+      videoRef.current.play()
         .then(() => {
           setIsVideoPlaying(true);
         })
