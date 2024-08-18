@@ -81,7 +81,7 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
 
   useEffect(() => {
     if (mediaItems[currentIndex].type === 'video' && videoRef.current) {
-      videoRef.current.play()
+      void videoRef.current.play()
         .then(() => {
           setIsVideoPlaying(true);
         })
