@@ -1,92 +1,175 @@
-import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
 
-function ImageCarousel({ images, title }: { images: string[]; title: string }) {
+interface MediaItem {
+  type: 'image' | 'video';
+  src: string;
+}
+
+function ImageCarousel({ images, videos, title }: { images?: string; videos?: string; title: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [nextIndex, setNextIndex] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const nextImage = useCallback(() => {
-    setIsTransitioning(true);
-    setNextIndex((currentIndex + 1) % images.length);
-    setTimeout(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-      setIsTransitioning(false);
-    }, 500); // This should match the transition duration in CSS
-  }, [images.length, currentIndex]);
+  const mediaItems: MediaItem[] = useMemo(() => {
+    const items: MediaItem[] = [];
+    if (images) {
+      items.push(...images.split(',').map(src => ({ type: 'image' as const, src: src.trim() })));
+    }
+    if (videos) {
+      items.push(...videos.split(',').map(src => ({ type: 'video' as const, src: src.trim() })));
+    }
+    return items;
+  }, [images, videos]);
 
-  const prevImage = useCallback(() => {
+  const nextItem = useCallback(() => {
+    if (mediaItems.length <= 1) return;
     setIsTransitioning(true);
-    setNextIndex((currentIndex - 1 + images.length) % images.length);
+    setNextIndex((currentIndex + 1) % mediaItems.length);
     setTimeout(() => {
-      setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % mediaItems.length);
       setIsTransitioning(false);
-    }, 500); // This should match the transition duration in CSS
-  }, [images.length, currentIndex]);
+    }, 500);
+  }, [mediaItems.length, currentIndex]);
+
+  const prevItem = useCallback(() => {
+    if (mediaItems.length <= 1) return;
+    setIsTransitioning(true);
+    setNextIndex((currentIndex - 1 + mediaItems.length) % mediaItems.length);
+    setTimeout(() => {
+      setCurrentIndex((prevIndex) => (prevIndex - 1 + mediaItems.length) % mediaItems.length);
+      setIsTransitioning(false);
+    }, 500);
+  }, [mediaItems.length, currentIndex]);
 
   useEffect(() => {
-    if (!isPaused) {
-      const interval = setInterval(nextImage, 2000); // Changed to 5 seconds for a slower rotation
-
+    if (!isPaused && mediaItems.length > 1 && mediaItems[currentIndex].type !== 'video') {
+      const interval = setInterval(nextItem, 5000);
       return () => clearInterval(interval);
     }
-  }, [isPaused, nextImage]);
+  }, [isPaused, nextItem, mediaItems, currentIndex]);
 
   const handleManualNavigation = useCallback(
     (direction: "prev" | "next") => {
-      if (isTransitioning) return; // Prevent rapid clicking
+      if (isTransitioning) return;
       setIsPaused(true);
       if (direction === "prev") {
-        prevImage();
+        prevItem();
       } else {
-        nextImage();
+        nextItem();
       }
-
-      // Resume automatic rotation after 10 seconds of inactivity
       setTimeout(() => {
         setIsPaused(false);
       }, 10000);
     },
-    [prevImage, nextImage, isTransitioning],
+    [prevItem, nextItem, isTransitioning],
   );
 
-  if (images.length === 0) {
+  const toggleVideoPlayback = () => {
+    if (videoRef.current) {
+      if (isVideoPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsVideoPlaying(!isVideoPlaying);
+    }
+  };
+
+  useEffect(() => {
+    if (mediaItems[currentIndex].type === 'video' && videoRef.current) {
+      videoRef.current.play().then(() => {
+        setIsVideoPlaying(true);
+      }).catch((error) => {
+        console.error("Auto-play was prevented:", error);
+        setIsVideoPlaying(false);
+      });
+    } else {
+      setIsVideoPlaying(false);
+    }
+  }, [currentIndex, mediaItems]);
+
+  if (mediaItems.length === 0) {
     return null;
   }
 
   return (
-    <div className="relative h-[240px] w-full sm:h-[320px] overflow-hidden">
-      {images.map((image, index) => (
-        <img
-          key={image}
-          alt={`${title} ${index + 1}`}
-          className={`absolute top-0 left-0 h-full w-full bg-secondary object-contain transition-opacity duration-500 ease-in-out ${
+    <div className="relative aspect-video w-full max-h-[150vh] overflow-hidden rounded-lg">
+      {mediaItems.map((item, index) => (
+        <div
+          key={item.src}
+          className={`absolute top-0 left-0 h-full w-full transition-opacity duration-500 ease-in-out ${
             index === currentIndex
               ? "opacity-100"
               : index === nextIndex && isTransitioning
               ? "opacity-100"
               : "opacity-0"
           }`}
-          src={image}
-        />
+        >
+          {item.type === 'image' ? (
+            <img
+              alt={`${title} ${index + 1}`}
+              className="h-full w-full bg-secondary object-contain"
+              src={item.src}
+            />
+          ) : (
+            <video
+              ref={index === currentIndex ? videoRef : null}
+              className="h-full w-full bg-secondary object-contain"
+              src={item.src}
+              loop
+              playsInline
+              muted
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleVideoPlayback();
+              }}
+            />
+          )}
+        </div>
       ))}
-      <button
-        aria-label="Previous image"
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white z-10"
-        type="button"
-        onClick={() => handleManualNavigation("prev")}
-      >
-        <ChevronLeft className="h-6 w-6" />
-      </button>
-      <button
-        aria-label="Next image"
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white z-10"
-        type="button"
-        onClick={() => handleManualNavigation("next")}
-      >
-        <ChevronRight className="h-6 w-6" />
-      </button>
+      {mediaItems.length > 1 && (
+        <>
+          <button
+            aria-label="Previous item"
+            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white z-10"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleManualNavigation("prev");
+            }}
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          <button
+            aria-label="Next item"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white z-10"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleManualNavigation("next");
+            }}
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+        </>
+      )}
+      {mediaItems[currentIndex].type === 'video' && (
+        <button
+          aria-label={isVideoPlaying ? "Pause video" : "Play video"}
+          className="absolute bottom-2 right-2 rounded-full bg-black/50 p-2 text-white z-10"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleVideoPlayback();
+          }}
+        >
+          {isVideoPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+        </button>
+      )}
     </div>
   );
 }

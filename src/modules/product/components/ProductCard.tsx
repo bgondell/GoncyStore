@@ -1,15 +1,11 @@
-"use client";
+// ProductCard.tsx
 
 import type { CartItem } from "~/cart/types";
-
 import type { Product } from "../types";
-
 import { useState, useMemo } from "react";
-
 import CartItemDrawer from "~/cart/components/CartItemDrawer";
 import { parseCurrency } from "~/currency/utils";
-
-import ImageCarousel from "./ImageCarousel"; // Add Animation between product images
+import ImageCarousel from "./ImageCarousel";
 
 function ProductCard({
   product,
@@ -23,11 +19,6 @@ function ProductCard({
     () => ({ ...product, quantity: 1 }),
     [product],
   );
-
-  // Split the image string into an array of image paths
-  const imagePaths = product.image
-    ? product.image.split(",").map((path) => path.trim())
-    : [];
 
   return (
     <>
@@ -57,7 +48,7 @@ function ProductCard({
               </p>
             </div>
           </div>
-          <ImageCarousel images={imagePaths} title={product.title} />
+          <ImageCarousel images={product.image} videos={product.video} title={product.title} />
         </div>
       </div>
       {isModalOpen ? (

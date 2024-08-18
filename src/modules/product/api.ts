@@ -21,6 +21,7 @@ class Product implements IProduct {
   category: IProduct["category"];
   description: IProduct["description"];
   image: IProduct["image"];
+  video: IProduct["video"];
   options: IProduct["options"];
   price: IProduct["price"];
 
@@ -35,6 +36,7 @@ class Product implements IProduct {
       category: product.category,
       description: product.description,
       image: product.image,
+      video: product.video,
       price: Number(product.price),
     });
   }
@@ -51,6 +53,7 @@ class Product implements IProduct {
       category: option.category,
       description: option.description,
       image: option.image,
+      video: option.video,
       price: Number(option.price),
     });
   }
@@ -62,6 +65,7 @@ class Product implements IProduct {
       category: this.category,
       description: this.description,
       image: this.image,
+      video: this.video,
       options: this.options,
       price: Number(this.price),
     };

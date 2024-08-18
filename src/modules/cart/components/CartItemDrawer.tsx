@@ -1,5 +1,4 @@
 import type { Option } from "~/product/types";
-
 import type { CartItem } from "../types";
 import type { ComponentProps } from "react";
 
@@ -58,11 +57,9 @@ function CartItemDrawer({
     [item],
   );
 
-  const imagePaths = item.image
-    ? item.image.split(",").map((path) => path.trim())
-    : [];
+  const images = item.image || '';
+  const videos = item.video || '';
 
-  // Reset formData and missingOptions when the drawer is opened
   useEffect(() => {
     if (isOpen) {
       setFormData({ ...item, options: {} });
@@ -108,13 +105,13 @@ function CartItemDrawer({
         </SheetHeader>
 
         <div
-          className={cn("overflow-y-auto", { "-mt-16": item.image })}
+          className={cn("overflow-y-auto", { "-mt-16": images || videos })}
           data-testid="cart-item-drawer"
         >
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-2">
-              {imagePaths.length > 0 && (
-                <ImageCarousel images={imagePaths} title={item.title} />
+              {(images || videos) && (
+                <ImageCarousel images={images} videos={videos} title={item.title} />
               )}
               <SheetTitle className="text-2xl font-medium">
                 {item.title}

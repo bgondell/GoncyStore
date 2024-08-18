@@ -3,7 +3,8 @@ export interface Option {
   title: string;
   category: string;
   description: string;
-  image: string;
+  image?: string;
+  video?: string;
   price: number;
 }
 
@@ -12,7 +13,8 @@ export interface Product {
   title: string;
   category: string;
   description: string;
-  image: string;
+  image?: string;
+  video?: string;
   options?: Record<Option["category"], Option[]>;
   price: number;
 }
