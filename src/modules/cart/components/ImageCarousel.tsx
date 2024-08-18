@@ -81,12 +81,14 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
 
   useEffect(() => {
     if (mediaItems[currentIndex].type === 'video' && videoRef.current) {
-      videoRef.current.play().then(() => {
-        setIsVideoPlaying(true);
-      }).catch((error) => {
-        console.error("Auto-play was prevented:", error);
-        setIsVideoPlaying(false);
-      });
+      videoRef.current.play()
+        .then(() => {
+          setIsVideoPlaying(true);
+        })
+        .catch((error: unknown) => {
+          console.error("Auto-play was prevented:", error);
+          setIsVideoPlaying(false);
+        });
     } else {
       setIsVideoPlaying(false);
     }
