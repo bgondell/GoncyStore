@@ -68,32 +68,25 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
     [prevItem, nextItem, isTransitioning],
   );
 
-  const toggleVideoPlayback = async () => {
+  const toggleVideoPlayback = () => {
     if (videoRef.current) {
       if (isVideoPlaying) {
         videoRef.current.pause();
       } else {
-        try {
-          await videoRef.current.play();
-        } catch (error: unknown) {
-          console.error("Error playing video:", error);
-        }
+        videoRef.current.play();
       }
       setIsVideoPlaying(!isVideoPlaying);
     }
   };
-  
 
   useEffect(() => {
     if (mediaItems[currentIndex].type === 'video' && videoRef.current) {
-      videoRef.current.play()
-        .then(() => {
-          setIsVideoPlaying(true);
-        })
-        .catch((error: unknown) => {
-          console.error("Auto-play was prevented:", error);
-          setIsVideoPlaying(false);
-        });
+      videoRef.current.play().then(() => {
+        setIsVideoPlaying(true);
+      }).catch((error) => {
+        console.error("Auto-play was prevented:", error);
+        setIsVideoPlaying(false);
+      });
     } else {
       setIsVideoPlaying(false);
     }
