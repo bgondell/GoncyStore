@@ -49,7 +49,7 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
 
   useEffect(() => {
     if (!isPaused && mediaItems.length > 1 && mediaItems[currentIndex].type !== 'video') {
-      const interval = setInterval(nextItem, 5000);
+      const interval = setInterval(nextItem, 2000);
       return () => clearInterval(interval);
     }
   }, [isPaused, nextItem, mediaItems, currentIndex]);
@@ -70,32 +70,27 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
     [prevItem, nextItem, isTransitioning],
   );
 
-  const toggleVideoPlayback = async () => {
+  const toggleVideoPlayback = useCallback(() => {
     if (videoRef.current) {
       if (isVideoPlaying) {
-        videoRef.current.pause();
+        void videoRef.current.pause();
       } else {
-        try {
-          await videoRef.current.play();
-        } catch (error: unknown) {
-          console.error("Error playing video:", error);
-        }
+        void videoRef.current.play().catch((error: unknown) => {
+          console.error("Video playback failed:", error);
+        });
       }
       setIsVideoPlaying(!isVideoPlaying);
     }
-  };
-  
+  }, [isVideoPlaying]);
 
   useEffect(() => {
     if (mediaItems[currentIndex].type === 'video' && videoRef.current) {
-      videoRef.current.play()
-        .then(() => {
-          setIsVideoPlaying(true);
-        })
-        .catch((error: unknown) => {
-          console.error("Auto-play was prevented:", error);
-          setIsVideoPlaying(false);
-        });
+      void videoRef.current.play().then(() => {
+        setIsVideoPlaying(true);
+      }).catch((error: unknown) => {
+        console.error("Auto-play was prevented:", error);
+        setIsVideoPlaying(false);
+      });
     } else {
       setIsVideoPlaying(false);
     }
