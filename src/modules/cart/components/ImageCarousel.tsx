@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, Pause, } from "lucide-react";
 
 interface MediaItem {
   type: 'image' | 'video';
@@ -71,19 +71,19 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
   const toggleVideoPlayback = useCallback(() => {
     if (videoRef.current) {
       if (isVideoPlaying) {
-        void videoRef.current.pause();
+        videoRef.current.pause();
       } else {
-        void videoRef.current.play().catch((error: unknown) => {
+        videoRef.current.play().catch((error: unknown) => {
           console.error("Video playback failed:", error);
         });
       }
       setIsVideoPlaying(!isVideoPlaying);
     }
   }, [isVideoPlaying]);
-
+  
   useEffect(() => {
     if (mediaItems[currentIndex].type === 'video' && videoRef.current) {
-      void videoRef.current.play().then(() => {
+      videoRef.current.play().then(() => {
         setIsVideoPlaying(true);
       }).catch((error: unknown) => {
         console.error("Auto-play was prevented:", error);
