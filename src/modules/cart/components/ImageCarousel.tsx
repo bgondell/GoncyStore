@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { ChevronLeft, ChevronRight, Play, Pause, } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, Pause, X, Maximize } from "lucide-react";
 
 interface MediaItem {
   type: 'image' | 'video';
@@ -12,7 +12,9 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
   const [isPaused, setIsPaused] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const maximizedVideoRef = useRef<HTMLVideoElement>(null);
 
   const mediaItems: MediaItem[] = useMemo(() => {
     const items: MediaItem[] = [];
@@ -45,6 +47,17 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
     }, 500);
   }, [mediaItems.length, currentIndex]);
 
+  const toggleMaximize = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMaximized((prev) => !prev);
+  }, []);
+
+  const handleOutsideClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      setIsMaximized(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!isPaused && mediaItems.length > 1 && mediaItems[currentIndex].type !== 'video') {
       const interval = setInterval(nextItem, 2000);
@@ -68,22 +81,25 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
     [prevItem, nextItem, isTransitioning],
   );
 
-  const toggleVideoPlayback = useCallback(() => {
-    if (videoRef.current) {
+  const toggleVideoPlayback = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const videoElement = isMaximized ? maximizedVideoRef.current : videoRef.current;
+    if (videoElement) {
       if (isVideoPlaying) {
-        videoRef.current.pause();
+        videoElement.pause();
       } else {
-        videoRef.current.play().catch((error: unknown) => {
+        videoElement.play().catch((error: unknown) => {
           console.error("Video playback failed:", error);
         });
       }
       setIsVideoPlaying(!isVideoPlaying);
     }
-  }, [isVideoPlaying]);
-  
+  }, [isVideoPlaying, isMaximized]);
+
   useEffect(() => {
-    if (mediaItems[currentIndex].type === 'video' && videoRef.current) {
-      videoRef.current.play().then(() => {
+    const videoElement = isMaximized ? maximizedVideoRef.current : videoRef.current;
+    if (mediaItems[currentIndex].type === 'video' && videoElement) {
+      videoElement.play().then(() => {
         setIsVideoPlaying(true);
       }).catch((error: unknown) => {
         console.error("Auto-play was prevented:", error);
@@ -92,47 +108,46 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
     } else {
       setIsVideoPlaying(false);
     }
-  }, [currentIndex, mediaItems]);
+  }, [currentIndex, mediaItems, isMaximized]);
 
   if (mediaItems.length === 0) {
     return null;
   }
 
   return (
+    <>
     <div className="relative aspect-video w-full max-h-[150vh] overflow-hidden rounded-lg">
-      {mediaItems.map((item, index) => (
-        <div
-          key={item.src}
-          className={`absolute top-0 left-0 h-full w-full transition-opacity duration-500 ease-in-out ${
-            index === currentIndex
-              ? "opacity-100"
-              : index === nextIndex && isTransitioning
-              ? "opacity-100"
-              : "opacity-0"
-          }`}
-        >
-          {item.type === 'image' ? (
-            <img
-              alt={`${title} ${index + 1}`}
-              className="h-full w-full bg-secondary object-contain"
-              src={item.src}
-            />
-          ) : (
-            <video
-              ref={index === currentIndex ? videoRef : null}
-              className="h-full w-full bg-secondary object-contain"
-              src={item.src}
-              loop
-              playsInline
-              muted
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleVideoPlayback();
-              }}
-            />
-          )}
-        </div>
-      ))}
+        {mediaItems.map((item, index) => (
+          <div
+            key={item.src}
+            className={`absolute top-0 left-0 h-full w-full transition-opacity duration-500 ease-in-out ${
+              index === currentIndex
+                ? "opacity-100"
+                : index === nextIndex && isTransitioning
+                ? "opacity-100"
+                : "opacity-0"
+            }`}
+          >
+            {item.type === 'image' ? (
+              <img
+                alt={`${title} ${index + 1}`}
+                className="h-full w-full bg-secondary object-contain"
+                src={item.src}
+                onClick={toggleMaximize}
+              />
+            ) : (
+              <video
+                ref={videoRef}
+                className="h-full w-full bg-secondary object-contain"
+                src={item.src}
+                loop
+                playsInline
+                muted
+                onClick={toggleMaximize}
+              />
+            )}
+          </div>
+        ))}
       {mediaItems.length > 1 && (
         <>
           <button
@@ -160,18 +175,102 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
         </>
       )}
       {mediaItems[currentIndex].type === 'video' && (
-        <button
-          aria-label={isVideoPlaying ? "Pause video" : "Play video"}
-          className="absolute bottom-2 right-2 rounded-full bg-black/50 p-2 text-white z-10"
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleVideoPlayback();
-          }}
-        >
-          {isVideoPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
-        </button>
+          <>
+            <button
+              aria-label={isVideoPlaying ? "Pause video" : "Play video"}
+              className="absolute bottom-2 right-2 rounded-full bg-black/50 p-2 text-white z-10"
+              onClick={toggleVideoPlayback}
+            >
+              {isVideoPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+            </button>
+            <button
+              aria-label="Maximize view"
+              className="absolute bottom-2 left-2 rounded-full bg-black/50 p-2 text-white z-10"
+              onClick={toggleMaximize}
+            >
+              <Maximize className="h-6 w-6" />
+            </button>
+          </>
+        )}
+      </div>
+      {isMaximized && (
+        <MaximizedView
+          mediaItems={mediaItems}
+          currentIndex={currentIndex}
+          isVideoPlaying={isVideoPlaying}
+          toggleVideoPlayback={toggleVideoPlayback}
+          handleManualNavigation={handleManualNavigation}
+          onClose={toggleMaximize}
+          handleOutsideClick={handleOutsideClick}
+          videoRef={maximizedVideoRef}
+        />
       )}
+    </>
+  );
+}
+
+function MaximizedView({
+  mediaItems,
+  currentIndex,
+  isVideoPlaying,
+  toggleVideoPlayback,
+  handleManualNavigation,
+  onClose,
+  handleOutsideClick,
+  videoRef,
+}: {
+  mediaItems: MediaItem[];
+  currentIndex: number;
+  isVideoPlaying: boolean;
+  toggleVideoPlayback: (e: React.MouseEvent) => void;
+  handleManualNavigation: (direction: "prev" | "next") => void;
+  onClose: (e: React.MouseEvent) => void;
+  handleOutsideClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  videoRef: React.RefObject<HTMLVideoElement>;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+      onClick={handleOutsideClick}
+    >
+      <div className="relative w-full h-full max-w-screen-lg max-h-screen">
+        <button
+          aria-label="Close maximized view"
+          className="absolute top-4 right-4 z-10 rounded-full bg-black/50 p-2 text-white"
+          onClick={onClose}
+        >
+          <X className="h-6 w-6" />
+        </button>
+        <div className="h-full w-full flex items-center justify-center">
+          {mediaItems[currentIndex].type === 'image' ? (
+            <img
+              src={mediaItems[currentIndex].src}
+              alt={`Maximized view ${currentIndex + 1}`}
+              className="max-h-full max-w-full object-contain"
+            />
+          ) : (
+            <video
+              ref={videoRef}
+              src={mediaItems[currentIndex].src}
+              className="max-h-full max-w-full object-contain"
+              loop
+              playsInline
+              muted
+              autoPlay
+            />
+          )}
+        </div>
+        {/* ... (keep the existing navigation buttons) */}
+        {mediaItems[currentIndex].type === 'video' && (
+          <button
+            aria-label={isVideoPlaying ? "Pause video" : "Play video"}
+            className="absolute bottom-4 right-4 rounded-full bg-black/50 p-2 text-white z-10"
+            onClick={toggleVideoPlayback}
+          >
+            {isVideoPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
