@@ -116,7 +116,7 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
 
   return (
     <>
-    <div className="relative aspect-video w-full max-h-[150vh] overflow-hidden rounded-lg">
+      <div className="relative aspect-video w-full max-h-[150vh] overflow-hidden rounded-lg">
         {mediaItems.map((item, index) => (
           <div
             key={item.src}
@@ -128,24 +128,28 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
                 : "opacity-0"
             }`}
           >
-            {item.type === 'image' ? (
-              <img
-                alt={`${title} ${index + 1}`}
-                className="h-full w-full bg-secondary object-contain"
-                src={item.src}
-                onClick={toggleMaximize}
-              />
-            ) : (
-              <video
-                ref={videoRef}
-                className="h-full w-full bg-secondary object-contain"
-                src={item.src}
-                loop
-                playsInline
-                muted
-                onClick={toggleMaximize}
-              />
-            )}
+            <button
+              className="w-full h-full bg-transparent border-0 cursor-pointer focus:outline-none"
+              onClick={toggleMaximize}
+              aria-label={`Maximize ${item.type}`}
+            >
+              {item.type === 'image' ? (
+                <img
+                  alt={`${title} ${index + 1}`}
+                  className="h-full w-full bg-secondary object-contain"
+                  src={item.src}
+                />
+              ) : (
+                <video
+                  ref={videoRef}
+                  className="h-full w-full bg-secondary object-contain"
+                  src={item.src}
+                  loop
+                  playsInline
+                  muted
+                />
+              )}
+            </button>
           </div>
         ))}
       {mediaItems.length > 1 && (
@@ -182,13 +186,6 @@ function ImageCarousel({ images, videos, title }: { images?: string; videos?: st
               onClick={toggleVideoPlayback}
             >
               {isVideoPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
-            </button>
-            <button
-              aria-label="Maximize view"
-              className="absolute bottom-2 left-2 rounded-full bg-black/50 p-2 text-white z-10"
-              onClick={toggleMaximize}
-            >
-              <Maximize className="h-6 w-6" />
             </button>
           </>
         )}
