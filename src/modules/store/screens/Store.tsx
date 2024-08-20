@@ -27,34 +27,41 @@ function StoreScreen({ products }: { products: Product[] }) {
   const [selectedCategory, setSelectedCategory] = useState<
     Product["category"] | null
   >(null);
+  
   const categories = useMemo<[Product["category"], Product[]][]>(() => {
     let draft = products;
-
+  
     // Filter products by search query
     if (query) {
       draft = draft.filter(({ title, description }) =>
         (title.toLowerCase() + description.toLowerCase()).includes(
-          query.toLowerCase(),
-        ),
+          query.toLowerCase()
+        )
       );
     }
-
-    // Group products by category
+  
+    // Group products by category and sort within each category
     const groups = draft.reduce<Map<Product["category"], Product[]>>(
       (map, product) => {
         if (!map.has(product.category)) {
           map.set(product.category, []);
         }
-
-        map.set(product.category, map.get(product.category)!.concat(product));
-
+  
+        map.get(product.category)!.push(product);
         return map;
       },
-      new Map(),
+      new Map()
     );
-
-    // Return them in a tuple of [category, products]
-    return Array.from(groups.entries());
+  
+    // Sort the products within each category by title
+    const sortedCategories = Array.from(groups.entries())
+      .sort(([categoryA], [categoryB]) => categoryA.localeCompare(categoryB))
+      .map(([category, categoryProducts]) => [
+        category,
+        categoryProducts.sort((a, b) => a.title.localeCompare(b.title)),
+      ]);
+  
+    return sortedCategories;
   }, [query, products]);
 
   function handleSelectCategory(category: Product["category"]) {
