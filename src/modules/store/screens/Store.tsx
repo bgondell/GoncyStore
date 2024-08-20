@@ -28,7 +28,7 @@ function StoreScreen({ products }: { products: Product[] }) {
     Product["category"] | null
   >(null);
   
-  const categories = useMemo<[Product["category"], Product[]][]>(() => {
+  const categories: [Product["category"], Product[]][] = useMemo(() => {
     let draft = products;
   
     // Filter products by search query
@@ -54,14 +54,12 @@ function StoreScreen({ products }: { products: Product[] }) {
     );
   
     // Sort the products within each category by title
-    const sortedCategories = Array.from(groups.entries())
+    return Array.from(groups.entries())
       .sort(([categoryA], [categoryB]) => categoryA.localeCompare(categoryB))
       .map(([category, categoryProducts]) => [
         category,
         categoryProducts.sort((a, b) => a.title.localeCompare(b.title)),
       ]);
-  
-    return sortedCategories;
   }, [query, products]);
 
   function handleSelectCategory(category: Product["category"]) {
